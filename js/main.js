@@ -19,7 +19,7 @@ const LEVELS = [L1, L2, L3, L4, L5, L6];
 const params = new URLSearchParams(location.search);
 
 // ------------------------------------------------------------ settings & save
-const defaults = { quality: 'high', sens: 1, fov: 75, vol: 0.8, bright: 1, invert: false, vhs: true };
+const defaults = { quality: 'high', sens: 1, fov: 75, vol: 0.8, bright: 1, invert: false, vhs: true, motion: true, fullscreen: false };
 const settings = Object.assign({}, defaults, JSON.parse(localStorage.getItem('threshold.settings') || '{}'));
 const save = Object.assign({ unlocked: 1, deaths: 0, time: 0, current: 0 }, JSON.parse(localStorage.getItem('threshold.save') || '{}'));
 const persist = () => { localStorage.setItem('threshold.settings', JSON.stringify(settings)); localStorage.setItem('threshold.save', JSON.stringify(save)); };
@@ -39,6 +39,7 @@ class Game {
 		this.renderer.camera = this.camera;
 		this.input = new Input(this.canvas);
 		this.player = new Player(this.camera, this.input, settings);
+		this.player.motion = settings.motion;
 		this.timer = new THREE.Timer(); this.timer.connect(document);
 		this.state = 'menu';
 		this.level = null; this.levelIndex = 0;
@@ -70,6 +71,13 @@ class Game {
 			else if (act === 'resume') this.resume();
 			else if (act === 'restart') this.startLevel(this.levelIndex);
 			else if (act === 'quit') this.quit();
+			else if (act === 'resetSave') {
+				if (confirm('Reset progress, deaths, and unlocked levels? Settings are kept.')) {
+					Object.assign(save, { unlocked: 1, deaths: 0, time: 0, current: 0 }); persist();
+					document.getElementById('btnContinue').disabled = true;
+					this.renderLevelList(); ui.toast('Progress reset.');
+				}
+			}
 			else if (b.dataset.level) this.startLevel(parseInt(b.dataset.level));
 		});
 		document.getElementById('btnContinue').disabled = !(save.current > 0);
@@ -86,10 +94,15 @@ class Game {
 		};
 		bind('optQuality', 'quality', v => v); bind('optSens', 'sens'); bind('optFov', 'fov'); bind('optVol', 'vol');
 		bind('optBright', 'bright'); bind('optInvert', 'invert'); bind('optVhs', 'vhs');
+		bind('optMotion', 'motion');
+		bind('optFullscreen', 'fullscreen');
 		addEventListener('keydown', (e) => {
 			if (e.code === 'Escape' && this.state === 'paused' && !document.pointerLockElement) { /* stay paused */ }
 			if (e.code === 'Escape' && this.state === 'playing' && this.input.allowNoLock) this.pause();
+			if (e.code === 'KeyM' && !ui.readerOpen && !e.repeat) { settings.vol = settings.vol > 0 ? 0 : 0.8; document.getElementById('optVol').value = settings.vol; this.applySettings('vol'); persist(); ui.toast(settings.vol > 0 ? 'Sound on' : 'Muted'); }
 		});
+		document.addEventListener('fullscreenchange', () => { settings.fullscreen = !!document.fullscreenElement; const el = document.getElementById('optFullscreen'); if (el) el.checked = settings.fullscreen; persist(); });
+		document.addEventListener('visibilitychange', () => { if (document.hidden && this.state === 'playing') this.pause(); });
 	}
 
 	renderLevelList() {
@@ -109,10 +122,19 @@ class Game {
 		fx.bright.value = settings.bright;
 		fx.vhs.value = settings.vhs ? 1 : 0;
 		this.camera.fov = settings.fov; this.camera.updateProjectionMatrix();
+		if (this.player) this.player.motion = settings.motion;
+		if (key === 'fullscreen') this.setFullscreen(settings.fullscreen);
 		if (key === 'quality' && this.renderer.quality !== settings.quality) {
 			this.renderer.setQuality(settings.quality);
 			if (this.level) this.level.onQuality && this.level.onQuality(settings.quality);
 		}
+	}
+
+	async setFullscreen(on) {
+		try {
+			if (on && !document.fullscreenElement) await document.documentElement.requestFullscreen();
+			else if (!on && document.fullscreenElement) await document.exitFullscreen();
+		} catch (e) { console.warn('fullscreen', e); }
 	}
 
 	// ------------------------------------------------------------ level flow

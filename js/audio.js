@@ -29,6 +29,11 @@ export class AudioEngine {
 		this.white = this.makeNoise('white', 4);
 		this.brown = this.makeNoise('brown', 6);
 		this.pink = this.makeNoise('pink', 5);
+		document.addEventListener('visibilitychange', () => {
+			if (!this.ctx) return;
+			if (document.hidden) this.ctx.suspend().catch(() => {});
+			else this.ctx.resume().catch(() => {});
+		});
 	}
 
 	setVolume(v) { this.volume = v; if (this.out) this.out.gain.setTargetAtTime(v, this.ctx.currentTime, 0.05); }

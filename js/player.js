@@ -26,6 +26,7 @@ export class Player {
 		this.flashDrain = 1 / 120;
 		this.headUnder = false;
 		this.wadeDepth = 0;
+		this.motion = settings.motion !== false;
 
 		// Flashlight
 		const fl = new THREE.SpotLight(0xfff0dc, 0, 32, 0.48, 0.55, 1.4);
@@ -120,7 +121,7 @@ export class Player {
 		this.pos.y = this._feetY;
 
 		// ---- head bob + footsteps
-		const bobAmt = clamp(this.speedNow / 5.4, 0, 1);
+		const bobAmt = this.motion ? clamp(this.speedNow / 5.4, 0, 1) : 0;
 		this.bobPhase += moved * (sprint ? 1.9 : 2.3);
 		const bob = Math.sin(this.bobPhase * Math.PI) * 0.045 * bobAmt;
 		const sway = Math.cos(this.bobPhase * Math.PI * 0.5) * 0.03 * bobAmt;

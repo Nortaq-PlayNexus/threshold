@@ -1,10 +1,10 @@
-<p align="center">
-  <img src="docs/assets/banner.svg" alt="THRESHOLD banner: dark terminal-style header reading THRESHOLD, a liminal horror in five levels for the browser" width="100%">
+﻿<p align="center">
+  <img src="docs/assets/banner.svg" alt="THRESHOLD banner: dark terminal-style header reading THRESHOLD, a liminal horror in six levels for the browser" width="100%">
 </p>
 
-<h1 align="center">THRESHOLD :: a liminal horror in five levels</h1>
+<h1 align="center">THRESHOLD :: a liminal horror in six levels</h1>
 
-<p align="center"><strong>You fall asleep at home. You wake up somewhere else.</strong> A first-person liminal-space exploration game for the browser — no install, no engine download, just open a URL.</p>
+<p align="center"><strong>You fall asleep at home. You wake up somewhere else.</strong> A first-person liminal-space exploration game for the browser â€” no install, no engine download, just open a URL.</p>
 
 <p align="center">
   <a href="LICENSE"><img alt="License: ISC" src="https://img.shields.io/badge/license-ISC-0a0e1a?style=flat-square&labelColor=0a0e1a"></a>
@@ -18,8 +18,8 @@
 <pre>
 IDENT   :: THRESHOLD
 CLASS   :: First-person liminal horror (browser)
-STATUS  :: ⚠ EXPERIMENTAL (prototype)
-STACK   :: Vanilla ES modules · three.js r187 (WebGPU + WebGL2 fallback) · TSL node materials
+STATUS  :: âš  EXPERIMENTAL (prototype)
+STACK   :: Vanilla ES modules Â· three.js r187 (WebGPU + WebGL2 fallback) Â· TSL node materials
 LINK    :: https://github.com/Nortaq-PlayNexus/threshold
 </pre>
 
@@ -56,17 +56,17 @@ Real captures from the current build (served locally, low quality preset for cap
 <p align="center">
   <img src="docs/screenshots/02-lobby.png" alt="In-game view of Level 1 The Lobby, a yellow-tiled backrooms-style corridor with fluorescent lighting and a first-person camera perspective" width="100%">
 </p>
-<p align="center"><em>Level 1 — The Lobby (capture)</em></p>
+<p align="center"><em>Level 1 â€” The Lobby (capture)</em></p>
 
 <p align="center">
   <img src="docs/screenshots/03-poolrooms.png" alt="In-game view of Level 2 The Poolrooms, white tiled pool architecture with water and pillars in a liminal interior" width="100%">
 </p>
-<p align="center"><em>Level 2 — The Poolrooms (capture)</em></p>
+<p align="center"><em>Level 2 â€” The Poolrooms (capture)</em></p>
 
 <p align="center">
   <img src="docs/screenshots/04-hill.png" alt="In-game view of Level 6 The Hill, outdoor grassy landscape under an HDR sky with a distant doorway" width="100%">
 </p>
-<p align="center"><em>Level 6 — The Hill (capture)</em></p>
+<p align="center"><em>Level 6 â€” The Hill (capture)</em></p>
 
 ## // 03 :: Quick start
 
@@ -98,6 +98,7 @@ npx serve .
 | C / Ctrl | Crouch (quieter) |
 | E (hold) | Interact / pick up / read |
 | F | Flashlight |
+| M | Mute / unmute audio |
 | Esc | Pause |
 
 ## // 05 :: URL options (debug / convenience)
@@ -125,25 +126,25 @@ See [`DESIGN.md`](DESIGN.md) for the full design document.
 
 ```
 threshold/
-├── index.html          # Entry, import map, UI overlays
-├── serve.py            # Dev static server (Python)
-├── css/                # Styles
-├── js/
-│   ├── main.js         # Boot, loop, menus, level loading
-│   ├── renderer.js     # WebGPU/WebGL renderer, pipeline, post FX
-│   ├── levels/         # l1_lobby … l6_hill
-│   ├── audio.js        # Procedural Web Audio
-│   └── …               # world, player, entities, water, props, ui, input, assets
-├── assets/             # Textures, HDRI, images, fonts (local)
-├── vendor/three/       # Vendored three.js r187 (ES modules)
-└── docs/               # Screenshots, banner, project docs
+â”œâ”€â”€ index.html          # Entry, import map, UI overlays
+â”œâ”€â”€ serve.py            # Dev static server (Python)
+â”œâ”€â”€ css/                # Styles
+â”œâ”€â”€ js/
+â”‚   â”œâ”€â”€ main.js         # Boot, loop, menus, level loading
+â”‚   â”œâ”€â”€ renderer.js     # WebGPU/WebGL renderer, pipeline, post FX
+â”‚   â”œâ”€â”€ levels/         # l1_lobby â€¦ l6_hill
+â”‚   â”œâ”€â”€ audio.js        # Procedural Web Audio
+â”‚   â””â”€â”€ â€¦               # world, player, entities, water, props, ui, input, assets
+â”œâ”€â”€ assets/             # Textures, HDRI, images, fonts (local)
+â”œâ”€â”€ vendor/three/       # Vendored three.js r187 (ES modules)
+â””â”€â”€ docs/               # Screenshots, banner, project docs
 ```
 
 More detail: [`docs/architecture.md`](docs/architecture.md).
 
 ## // 08 :: Development
 
-- **No Node build step** for the app itself: it is static ESM. `package.json` lists `three` as a dependency metadata entry but the runtime uses files under `vendor/three/` and import maps in `index.html` — treat `npm install` as optional unless you are managing dependencies yourself.
+- **No Node build step** for the app itself: it is static ESM. `package.json` lists `three` as a dependency metadata entry but the runtime uses files under `vendor/three/` and import maps in `index.html` â€” treat `npm install` as optional unless you are managing dependencies yourself.
 - Local run: see Quick start (`serve.py` or any static server).
 - Editing: refresh the browser. Use browser devtools for WebGPU/WebGL errors.
 
@@ -168,10 +169,10 @@ This is a static site. Host the repository contents (or built output equivalent)
 - **Game content:** original prototype code in this repository is provided under the **ISC License** (see [`LICENSE`](LICENSE)). Third-party assets and libraries retain their own licenses (see in-repo files such as `vendor/` contents and asset sources noted below).
 - **Textures:** ambientCG assets are used under **CC0** (per ambientCG terms).
 - **Sky HDRI:** Poly Haven kloofendal (partly cloudy) used under **CC0** (per Poly Haven terms).
-- **Fonts:** bundled WOFF2 files under `assets/fonts/` — verify individual font licenses before redistribution in other contexts if you are unsure (common open licenses apply; check original sources if you repackage).
+- **Fonts:** bundled WOFF2 files under `assets/fonts/` â€” verify individual font licenses before redistribution in other contexts if you are unsure (common open licenses apply; check original sources if you repackage).
 - **Inspiration:** *Liminality* is a trademark/property of its respective owner (Lory Games). This project is an independent fan/learning-inspired prototype and is **not endorsed by** Lory Games.
 - **AI-generated imagery:** some images under `assets/img/` were AI-generated (as noted in project docs). No claim is made about their copyright status beyond what you determine for your jurisdiction; review before commercial use.
-- **No warranty.** This software is provided “as is”, without warranty of any kind. See ISC terms in [`LICENSE`](LICENSE).
+- **No warranty.** This software is provided â€œas isâ€, without warranty of any kind. See ISC terms in [`LICENSE`](LICENSE).
 
 ## Links
 
@@ -182,3 +183,4 @@ This is a static site. Host the repository contents (or built output equivalent)
 - Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Security: [`SECURITY.md`](SECURITY.md)
 - Code of conduct: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+
