@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THRESHOLD — a liminal horror in five levels</title>
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.webgpu.js",
+    "three/webgpu": "./vendor/three/three.webgpu.js",
+    "three/tsl": "./vendor/three/three.tsl.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<!-- ============== HUD ============== -->
+<div id="hud" class="hidden">
+  <div id="crosshair"></div>
+  <div id="prompt"></div>
+  <div id="holdring"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/></svg></div>
+  <div id="objective"><div class="lvl"></div><div class="txt"></div></div>
+  <div id="meters">
+    <div class="meter" id="stamina"><i></i></div>
+    <div class="meter" id="battery"><span>LIGHT</span><i></i></div>
+  </div>
+  <div id="rec"><b></b> REC <span id="clock">00:00:00</span></div>
+  <div id="subtitle"></div>
+  <div id="toast"></div>
+</div>
+
+<!-- Note / photo reader -->
+<div id="reader" class="hidden">
+  <div class="paper"><div class="body"></div><div class="hint">[E] / [ESC] close</div></div>
+</div>
+
+<!-- Level title card -->
+<div id="card" class="hidden"><div class="n"></div><div class="t"></div><div class="s"></div></div>
+
+<!-- Fade layer -->
+<div id="fade"></div>
+
+<!-- ============== MENUS ============== -->
+<div id="menu" class="screen">
+  <div class="keyart"></div>
+  <div class="vhs"></div>
+  <div class="menu-inner">
+    <h1 class="logo">THRESHOLD</h1>
+    <div class="tag">a liminal horror in five levels</div>
+    <nav>
+      <button data-act="new">New Game</button>
+      <button data-act="continue" id="btnContinue">Continue</button>
+      <button data-act="levels">Level Select</button>
+      <button data-act="settings">Settings</button>
+      <button data-act="controls">Controls</button>
+    </nav>
+    <div class="foot"><span id="gpuinfo">detecting GPU…</span> · three.js r187 · WebGPU / TSL · headphones recommended</div>
+  </div>
+</div>
+
+<div id="levels" class="screen hidden panel-screen">
+  <div class="panel">
+    <h2>Level Select</h2>
+    <div id="levelList"></div>
+    <button class="back" data-act="back">Back</button>
+  </div>
+</div>
+
+<div id="settings" class="screen hidden panel-screen">
+  <div class="panel">
+    <h2>Settings</h2>
+    <label>Graphics quality
+      <select id="optQuality">
+        <option value="ultra">Ultra: GTAO + TRAA + full-res reflections</option>
+        <option value="high">High: reflections + SMAA</option>
+        <option value="low">Low: performance</option>
+      </select></label>
+    <label>Mouse sensitivity <input type="range" id="optSens" min="0.2" max="3" step="0.05"></label>
+    <label>Field of view <input type="range" id="optFov" min="60" max="100" step="1"></label>
+    <label>Master volume <input type="range" id="optVol" min="0" max="1" step="0.01"></label>
+    <label>Brightness <input type="range" id="optBright" min="0.6" max="1.6" step="0.01"></label>
+    <label class="chk"><input type="checkbox" id="optInvert"> Invert Y</label>
+    <label class="chk"><input type="checkbox" id="optVhs"> VHS film effects</label>
+    <button class="back" data-act="back">Back</button>
+  </div>
+</div>
+
+<div id="controls" class="screen hidden panel-screen">
+  <div class="panel">
+    <h2>Controls</h2>
+    <table class="keys">
+      <tr><td>W A S D</td><td>Move</td></tr>
+      <tr><td>Mouse</td><td>Look</td></tr>
+      <tr><td>Shift</td><td>Sprint (loud)</td></tr>
+      <tr><td>C / Ctrl</td><td>Crouch (quiet)</td></tr>
+      <tr><td>E (hold)</td><td>Interact / pick up / read</td></tr>
+      <tr><td>F</td><td>Flashlight</td></tr>
+      <tr><td>Esc</td><td>Pause</td></tr>
+    </table>
+    <button class="back" data-act="back">Back</button>
+  </div>
+</div>
+
+<div id="pause" class="screen hidden panel-screen">
+  <div class="panel">
+    <h2>Paused</h2>
+    <nav>
+      <button data-act="resume">Resume</button>
+      <button data-act="restart">Restart Level</button>
+      <button data-act="settings">Settings</button>
+      <button data-act="quit">Quit to Menu</button>
+    </nav>
+  </div>
+</div>
+
+<div id="death" class="screen hidden">
+  <div class="death-inner">
+    <div class="d1">SIGNAL LOST</div>
+    <div class="d2" id="deathMsg">You were found.</div>
+    <nav><button data-act="restart">Try again</button><button data-act="quit">Quit to Menu</button></nav>
+  </div>
+</div>
+
+<div id="ending" class="screen hidden">
+  <div class="end-inner">
+    <div class="e1">You wake up.</div>
+    <div class="e2">The ceiling of your bedroom. Morning light. The hum is gone.</div>
+    <div class="e3" id="endStats"></div>
+    <div class="credits">
+      <p>THRESHOLD</p>
+      <p>Engine: three.js r187 · WebGPURenderer · TSL · Clustered Forward+ lighting · GTAO · TRAA</p>
+      <p>Textures: ambientCG (CC0) · Sky: Poly Haven (CC0) · Art: AI-generated · Audio: procedural Web Audio</p>
+      <p>Inspired by <i>Liminality</i> by Lory Games</p>
+    </div>
+    <nav><button data-act="quit">Return to Menu</button></nav>
+  </div>
+</div>
+
+<div id="loading" class="screen hidden">
+  <div class="load-inner"><div class="lt">LOADING</div><div class="bar"><i id="loadBar"></i></div><div id="loadTxt">…</div></div>
+</div>
+
+<div id="clickToPlay" class="hidden"><div>Click to continue</div></div>
+
+<div id="fatal" class="hidden"></div>
+
+<div id="grain"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

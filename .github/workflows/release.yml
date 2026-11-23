@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release archive
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          zip -r dist/threshold-${GITHUB_REF_NAME}.zip . \
+            -x ".git/*" ".github/*" "node_modules/*" "docs/screenshots/*.png" || true
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/threshold-${{ github.ref_name }}.zip
+          generate_release_notes: true
